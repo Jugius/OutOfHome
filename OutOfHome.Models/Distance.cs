@@ -1,69 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace OutOfHome.Models
 {
-    public enum DistanceUnits
+    public enum DistanceUnit
     {
         Miles,
         Kilometers
     }
-    public struct Distance
+    public readonly struct Distance : IEquatable<Distance>
     {
         public const double EarthRadiusInMiles = 3956.545;
         public const double EarthRadiusInKilometers = 6378.135;
         private const double ConversionConstant = 0.621371192;
 
-        private readonly double value;
-        private readonly DistanceUnits units;
+        public double Value { get; }
 
-        public double Value
-        {
-            get { return value; }
-        }
+        public DistanceUnit Units { get; }
 
-        public DistanceUnits Units
+        public Distance(double value, DistanceUnit units)
         {
-            get { return units; }
-        }
-
-        public Distance(double value, DistanceUnits units)
-        {
-            this.value = Math.Round(value, 8);
-            this.units = units;
+            this.Value = Math.Round(value, 8);
+            this.Units = units;
         }
 
         #region Helper Factory Methods
 
         public static Distance FromMiles(double miles)
         {
-            return new Distance(miles, DistanceUnits.Miles);
+            return new Distance(miles, DistanceUnit.Miles);
         }
 
         public static Distance FromKilometers(double kilometers)
         {
-            return new Distance(kilometers, DistanceUnits.Kilometers);
+            return new Distance(kilometers, DistanceUnit.Kilometers);
         }
 
         #endregion
 
         #region Unit Conversions
 
-        private Distance ConvertUnits(DistanceUnits units)
+        private Distance ConvertUnits(DistanceUnit units)
         {
-            if (this.units == units) return this;
+            if (this.Units == units) return this;
 
             double newValue;
             switch (units)
             {
-                case DistanceUnits.Miles:
-                    newValue = value * ConversionConstant;
+                case DistanceUnit.Miles:
+                    newValue = Value * ConversionConstant;
                     break;
-                case DistanceUnits.Kilometers:
-                    newValue = value / ConversionConstant;
+                case DistanceUnit.Kilometers:
+                    newValue = Value / ConversionConstant;
                     break;
                 default:
                     newValue = 0;
@@ -75,12 +67,12 @@ namespace OutOfHome.Models
 
         public Distance ToMiles()
         {
-            return ConvertUnits(DistanceUnits.Miles);
+            return ConvertUnits(DistanceUnit.Miles);
         }
 
         public Distance ToKilometers()
         {
-            return ConvertUnits(DistanceUnits.Kilometers);
+            return ConvertUnits(DistanceUnit.Kilometers);
         }
 
         #endregion
@@ -90,16 +82,16 @@ namespace OutOfHome.Models
             return base.Equals(obj);
         }
 
-        public bool Equals(Distance obj)
+        public bool Equals(Distance other)
         {
-            return base.Equals(obj);
+            return base.Equals(other);
         }
 
-        public bool Equals(Distance obj, bool normalizeUnits)
+        public bool Equals(Distance other, bool normalizeUnits)
         {
             if (normalizeUnits)
-                obj = obj.ConvertUnits(Units);
-            return Equals(obj);
+                other = other.ConvertUnits(Units);
+            return Equals(other);
         }
 
         public override int GetHashCode()
@@ -109,7 +101,7 @@ namespace OutOfHome.Models
 
         public override string ToString()
         {
-            return string.Format("{0} {1}", value, units);
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1}", this.Value, Units);
         }
 
         #region Operators
@@ -166,7 +158,6 @@ namespace OutOfHome.Models
         {
             return distance.Value;
         }
-
         #endregion
     }
 }

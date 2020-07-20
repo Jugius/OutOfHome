@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OutOfHome.Models
+namespace OutOfHome.Models.Occupation
 {
     public enum OccupationKind
     {

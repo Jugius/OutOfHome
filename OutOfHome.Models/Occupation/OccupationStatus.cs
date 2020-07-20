@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace OutOfHome.Models
+namespace OutOfHome.Models.Occupation
 {
     public class OccupationStatus
     {       

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 
 namespace OutOfHome.Models
 {
     public class Location
     {
+        private static readonly NumberFormatInfo parsePointFormatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
+        private const NumberStyles parseStyle = NumberStyles.AllowDecimalPoint;
         double latitude;
         double longitude;
         public virtual double Latitude
@@ -49,10 +50,25 @@ namespace OutOfHome.Models
             Latitude = latitude;
             Longitude = longitude;
         }
+        public static bool TryParse(double latitude, double longitude, out Location result)
+        {
+            result = null;
+            if (latitude < -90 || latitude > 90 || double.IsNaN(latitude)) return false;
+            if (longitude < -180 || longitude > 180 || double.IsNaN(longitude)) return false;
+
+            result = new Location(latitude, longitude);
+            return true;
+        }
+        public static bool TryParse(string latitude, string longitude, out Location result)
+        {
+            result = null;
+            if (!TryParseStringToDouble(latitude, out double lat) || !TryParseStringToDouble(longitude, out double lon)) return false;
+            return TryParse(lat, lon, out result);
+        }
         public static bool TryParse(string address, out Location result)
         {
             result = null;
-            
+
             if (string.IsNullOrWhiteSpace(address))
                 return false;
 
@@ -80,18 +96,9 @@ namespace OutOfHome.Models
             if (parts.Count < 4)
                 return false;
 
-            NumberFormatInfo formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
-            const NumberStyles style = NumberStyles.AllowDecimalPoint;
 
-            if (double.TryParse(parts[0] + '.' + parts[1], style, formatter, out double lat) && double.TryParse(parts[2] + '.' + parts[3], style, formatter, out double lon))
-            {
-                result = new Location(lat, lon);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            if (!TryParseStringToDouble(parts[0] + '.' + parts[1], out double lat) || !TryParseStringToDouble(parts[2] + '.' + parts[3], out double lon)) return false;
+            return TryParse(lat, lon, out result);
         }
         public static Location Parse(string address)
         {
@@ -120,9 +127,8 @@ namespace OutOfHome.Models
                 parts.Add(new string(currentPart.ToCharArray()));
             if (parts.Count < 4)
                 throw new Exception($"Unable to parse. Found {parts.Count} parts only.");
-            NumberFormatInfo formatter = new NumberFormatInfo { NumberDecimalSeparator = "." };
-            return new Location(Double.Parse($"{parts[0]}.{parts[1]}", formatter), Double.Parse($"{parts[2]}.{parts[3]}", formatter));
-           
+
+            return new Location(Double.Parse($"{parts[0]}.{parts[1]}", parsePointFormatter), Double.Parse($"{parts[2]}.{parts[3]}", parsePointFormatter));
         }
 
         protected virtual double ToRadian(double val)
@@ -131,12 +137,12 @@ namespace OutOfHome.Models
         }
         public virtual Distance DistanceBetween(Location location)
         {
-            return DistanceBetween(location, DistanceUnits.Kilometers);
+            return DistanceBetween(location, DistanceUnit.Kilometers);
         }
 
-        public virtual Distance DistanceBetween(Location location, DistanceUnits units)
+        public virtual Distance DistanceBetween(Location location, DistanceUnit units)
         {
-            double earthRadius = (units == DistanceUnits.Miles) ? Distance.EarthRadiusInMiles : Distance.EarthRadiusInKilometers;
+            double earthRadius = (units == DistanceUnit.Miles) ? Distance.EarthRadiusInMiles : Distance.EarthRadiusInKilometers;
 
             double latRadian = ToRadian(location.Latitude - this.Latitude);
             double longRadian = ToRadian(location.Longitude - this.Longitude);
@@ -168,8 +174,7 @@ namespace OutOfHome.Models
 
         public override int GetHashCode()
         {
-            //return Latitude.GetHashCode() ^ Latitude.GetHashCode();
-            return (Latitude.ToString() + Longitude.ToString()).GetHashCode();
+            return this.ToString().GetHashCode(StringComparison.InvariantCultureIgnoreCase);
         }
         public override string ToString()
         {            
@@ -178,6 +183,34 @@ namespace OutOfHome.Models
         public static bool IsNullOrEmpty(Location location)
         {
             return location == null || (location.Latitude == 0 && location.Longitude == 0);
+        }
+        private static bool TryParseStringToDouble(string value, out double result)
+        {
+            result = 0;
+            if (string.IsNullOrEmpty(value)) return false;
+            if (double.TryParse(value, parseStyle, parsePointFormatter, out result)) return true;
+
+            List<string> numberParts = new List<string>(2);
+            string currentPart = string.Empty;
+            foreach (var currChar in value)
+            {
+                if (char.IsDigit(currChar))
+                    currentPart += currChar;
+                else
+                {
+                    if (!string.IsNullOrEmpty(currentPart))
+                    {
+                        numberParts.Add(new string(currentPart.ToCharArray()));
+                        currentPart = string.Empty;
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(currentPart))
+                numberParts.Add(new string(currentPart.ToCharArray()));
+
+            if (numberParts.Count < 2) return false;
+
+            return double.TryParse($"{numberParts[0]}.{numberParts[1]}", parseStyle, parsePointFormatter, out result);
         }
     }
 }

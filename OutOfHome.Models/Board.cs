@@ -2,7 +2,7 @@
 
 namespace OutOfHome.Models
 {
-    public abstract class Board
+    public class Board
     {
         public string ProviderID { get; set; }
         public string Supplier { get; set; }
