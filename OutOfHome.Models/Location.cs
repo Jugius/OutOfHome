@@ -103,7 +103,7 @@ namespace OutOfHome.Models
         public static Location Parse(string address)
         {
             if (string.IsNullOrWhiteSpace(address))
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
             if (!char.IsDigit(address.First()))
                 throw new FormatException("address");
@@ -142,6 +142,8 @@ namespace OutOfHome.Models
 
         public virtual Distance DistanceBetween(Location location, DistanceUnit units)
         {
+            if (location == null) throw new ArgumentNullException(nameof(location));
+
             double earthRadius = (units == DistanceUnit.Miles) ? Distance.EarthRadiusInMiles : Distance.EarthRadiusInKilometers;
 
             double latRadian = ToRadian(location.Latitude - this.Latitude);
