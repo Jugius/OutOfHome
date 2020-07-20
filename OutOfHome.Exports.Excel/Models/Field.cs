@@ -54,11 +54,15 @@ namespace OutOfHome.Exports.Excel.Models
                 FieldKind.URL_Photo => board.Photo,
                 FieldKind.URL_Map => board.Map,
                 FieldKind.Light => board.Lighting ? "+" : "-",
-                FieldKind.Price => (board as ISupplierContent)?.Price,
+                FieldKind.Price => (board as IHaveSupplierContent)?.Price,
                 FieldKind.DoorsId => board.DoorsInfo?.DoorsID,
                 FieldKind.OTS => board.DoorsInfo?.OTS,
                 FieldKind.GRP => board.DoorsInfo?.GRP,
                 FieldKind.Location => board.Location?.ToString(),
+                FieldKind.Street => board.Address.Street,
+                FieldKind.StreetNumber => board.Address.StreetNumber,
+                FieldKind.AddressDescription => board.Address.Description,
+                FieldKind.OccSource => throw new NotImplementedException(),
                 _ => throw new Exception($"There is no implemented getter in GetPropertyValueFrom for FieldKind {this.Kind}"),
             };
         }

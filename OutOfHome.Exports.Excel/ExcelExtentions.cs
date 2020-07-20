@@ -2,7 +2,7 @@
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
 using OutOfHome.Exports.Excel.Models;
-using OutOfHome.Models;
+using OutOfHome.Models.Occupation;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -25,11 +25,6 @@ namespace OutOfHome.Exports.Excel
                 col.Width = field.Width;
                 if (field.NumberFormat != null)
                     col.Style.Numberformat.Format = field.NumberFormat;
-                if (field.IsHyperlink)
-                {
-                    col.Style.Font.Color.SetColor(OfficeOpenXml.Drawing.eThemeSchemeColor.Hyperlink);
-                }
-
             }
 
             int column = columns.Count;
@@ -48,6 +43,7 @@ namespace OutOfHome.Exports.Excel
             int lastColumn = column;
             ExcelRange rg = worksheet.Cells[firstRow, firstColumn, lastRow, lastColumn];
             rg.FormatRange(schema.FontColor, schema.Font);
+            rg.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             const string tableName = "Grid";
 
             ExcelTable tab = worksheet.Tables.Add(rg, tableName);
@@ -55,6 +51,29 @@ namespace OutOfHome.Exports.Excel
             rg.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
 
             return headerRow + 1;
+        }
+        public static void WriteHyperlink(this ExcelRange cell, string text, string url, bool excelHyperlink = false, bool underline = true, bool asFormula = false)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
+            if (excelHyperlink)
+                cell.Hyperlink = new ExcelHyperLink(url) { Display = text };
+            else
+            {
+                if (asFormula)
+                {
+                    cell.Formula = "HYPERLINK(\"" + url + "\",\"" + text + "\")";
+                    //cell.Formula = string.Format("HYPERLINK(\"{0}\",\"{1}\")", url, text);
+                }
+                else
+                {
+                    cell.Hyperlink = new Uri(url);
+                    cell.Value = text;                    
+                }
+                cell.Style.Font.UnderLine = underline;
+                cell.Style.Font.Color.SetColor(OfficeOpenXml.Drawing.eThemeSchemeColor.Hyperlink);
+            }       
         }
 
 

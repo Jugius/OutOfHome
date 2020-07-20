@@ -1,8 +1,10 @@
 ﻿using OfficeOpenXml;
 using OutOfHome.Exports.Excel.Models;
 using OutOfHome.Models;
+using OutOfHome.Models.Occupation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +27,10 @@ namespace OutOfHome.Exports.Excel
                 using (ExcelPackage package = new ExcelPackage())
                 {
                     SheetSchema schema = fileInfo.SheetSchema;
+                    var linksNumber = schema.TableColumns.Count(a => a.IsHyperlink) * _itemsTotal;
+
+                    bool linksAsFormula = (schema.TableColumns.Count(a => a.IsHyperlink) * _itemsTotal) > 65500;
+
                     var worksheet = package.Workbook.Worksheets.Add("Сетка");
 
                     worksheet.View.ShowGridLines = false;
@@ -38,11 +44,9 @@ namespace OutOfHome.Exports.Excel
                             if (column.IsHyperlink)
                             {
                                 string link = column.GetPropertyValueFrom(board)?.ToString();
-                                if (!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri _))
-                                {
-                                    cell.Formula = "HYPERLINK(\"" + link + "\",\"" + column.Name + "\")";
-                                    //cell.Style.Font.Color.SetColor(System.Drawing.Color.Blue);       
-                                }
+
+                                if (!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri uri))
+                                    cell.WriteHyperlink(column.Name, uri.ToString(), false, true, linksAsFormula);
                             }
                             else
                             {
@@ -56,7 +60,7 @@ namespace OutOfHome.Exports.Excel
                         {
                             monthColumn++;
                             var cell = worksheet.Cells[SheetSchema.GetColumnLetter(monthColumn) + row.ToString()];
-                            if (!(board is ISupplierContent supplierContent) || supplierContent.Occupation == null)
+                            if (!(board is IHaveSupplierContent supplierContent) || supplierContent.Occupation == null)
                             {
                                 var columnLetter = SheetSchema.GetColumnLetter(monthColumn);
                                 cell.Value = "Н/Д";
