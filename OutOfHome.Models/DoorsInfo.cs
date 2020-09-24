@@ -17,5 +17,7 @@ namespace OutOfHome.Models
         /// D_ID
         /// </summary>
         public int ConstructionID { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeleteDay { get; set; }
     }
 }

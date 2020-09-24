@@ -75,7 +75,7 @@ namespace OutOfHome.Models
             if (!char.IsDigit(address.First()))
                 return false;
 
-            List<string> parts = new List<string>();
+            List<string> parts = new List<string>(4);
             string currentPart = string.Empty;
             foreach (var ch in address)
             {
@@ -108,7 +108,7 @@ namespace OutOfHome.Models
             if (!char.IsDigit(address.First()))
                 throw new FormatException("address");
 
-            List<string> parts = new List<string>();
+            List<string> parts = new List<string>(4);
             string currentPart = string.Empty;
             foreach (var ch in address)
             {

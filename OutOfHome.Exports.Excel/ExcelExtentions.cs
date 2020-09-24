@@ -11,7 +11,7 @@ namespace OutOfHome.Exports.Excel
 {
     internal static class ExcelExtentions
     {
-        internal static int InsertTable(this ExcelWorksheet worksheet, int rowsNumber, SheetSchema schema)
+        internal static int InsertTable(this ExcelWorksheet worksheet, int rowsNumber, SheetSchema schema, bool addOccupation)
         {
             const int headerRow = 1;
             var columns = schema.TableColumns;
@@ -22,20 +22,23 @@ namespace OutOfHome.Exports.Excel
                 worksheet.Cells[columnLetter + headerRow.ToString()].Value = field.Name;
                 var col = worksheet.Column(columns.IndexOf(field) + 1);
                 col.Style.HorizontalAlignment = field.GetDefaultAlign();
-                col.Width = field.Width;
+                col.Width = field.ColumnWidth;
                 if (field.NumberFormat != null)
                     col.Style.Numberformat.Format = field.NumberFormat;
             }
-
             int column = columns.Count;
-            int month = DateTime.Now.Month;
-            while (month <= 12)
+            if(addOccupation)
             {
-                var columnLetter = SheetSchema.GetColumnLetter(++column);
-                worksheet.Cells[columnLetter + headerRow.ToString()].Value = GetMonthName(month);
-                worksheet.Column(column).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                worksheet.Column(column).Width = 7;
-                month++;
+            
+                int month = DateTime.Now.Month;
+                while(month <= 12)
+                {
+                    var columnLetter = SheetSchema.GetColumnLetter(++column);
+                    worksheet.Cells[columnLetter + headerRow.ToString()].Value = GetMonthName(month);
+                    worksheet.Column(column).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    worksheet.Column(column).Width = 7;
+                    month++;
+                }
             }
 
             const int firstRow = 1, firstColumn = 1;
@@ -63,8 +66,7 @@ namespace OutOfHome.Exports.Excel
             {
                 if (asFormula)
                 {
-                    cell.Formula = "HYPERLINK(\"" + url + "\",\"" + text + "\")";
-                    //cell.Formula = string.Format("HYPERLINK(\"{0}\",\"{1}\")", url, text);
+                    cell.Formula = "HYPERLINK(\"" + url + "\",\"" + text + "\")";                    
                 }
                 else
                 {
@@ -85,17 +87,22 @@ namespace OutOfHome.Exports.Excel
             range.Style.Font.Italic = font.Italic;
             //range.Style.Font.Color.SetColor(foreColor);
         }
-        public static ExcelHorizontalAlignment GetDefaultAlign(this Field field)
+        internal static void SetBackgroundColor(this ExcelRange range, System.Drawing.Color color)
+        {
+            range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            range.Style.Fill.BackgroundColor.SetColor(color);
+        }
+        public static ExcelHorizontalAlignment GetDefaultAlign(this BoardPropertyGetter field)
         {
             switch (field.Kind)
             {
-                case FieldKind.Side:
-                case FieldKind.Size:
-                case FieldKind.Light:
-                case FieldKind.URL_Map:
-                case FieldKind.URL_Photo:
-                case FieldKind.OTS:
-                case FieldKind.GRP:
+                case BoardProperty.Side:
+                case BoardProperty.Size:
+                case BoardProperty.Light:
+                case BoardProperty.URL_Map:
+                case BoardProperty.URL_Photo:
+                case BoardProperty.OTS:
+                case BoardProperty.GRP:
                     return ExcelHorizontalAlignment.Center;
                 default: return ExcelHorizontalAlignment.Left;
             }
@@ -124,5 +131,6 @@ namespace OutOfHome.Exports.Excel
             { OccupationKind.Unavailable, Color.FromArgb(242, 242, 242) }
         };
         internal static Color GetCellColor(this OccupationKind kind) => OccupationColors.TryGetValue(kind, out Color color) ? color : Color.Transparent;
+        
     }
 }

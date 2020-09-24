@@ -2,13 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="5.2.0" />
+    <PackageReference Include="EPPlus" Version="5.3.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OutOfHome.Exports\OutOfHome.Exports.csproj" />
     <ProjectReference Include="..\OutOfHome.Models\OutOfHome.Models.csproj" />
   </ItemGroup>
 

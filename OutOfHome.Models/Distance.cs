@@ -47,21 +47,12 @@ namespace OutOfHome.Models
         private Distance ConvertUnits(DistanceUnit units)
         {
             if (this.Units == units) return this;
-
-            double newValue;
-            switch (units)
+            var newValue = units switch
             {
-                case DistanceUnit.Miles:
-                    newValue = Value * ConversionConstant;
-                    break;
-                case DistanceUnit.Kilometers:
-                    newValue = Value / ConversionConstant;
-                    break;
-                default:
-                    newValue = 0;
-                    break;
-            }
-
+                DistanceUnit.Miles => Value * ConversionConstant,
+                DistanceUnit.Kilometers => Value / ConversionConstant,
+                _ => 0,
+            };
             return new Distance(newValue, units);
         }
 
@@ -93,11 +84,7 @@ namespace OutOfHome.Models
                 other = other.ConvertUnits(Units);
             return Equals(other);
         }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => ToString().GetHashCode(StringComparison.InvariantCultureIgnoreCase);
 
         public override string ToString()
         {
