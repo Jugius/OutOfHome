@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OutOfHome.Helpers
 {
@@ -12,7 +10,6 @@ namespace OutOfHome.Helpers
             { "1.72x1.2", "1.8x1.2" },
             { "1.79x1.2", "1.8x1.2" },
             { "1.86x1.27", "1.8x1.2" },
-
         };
     }
 }
