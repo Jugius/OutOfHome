@@ -1,4 +1,5 @@
 ﻿using OutOfHome.Models;
+using OutOfHome.Models.Boards;
 using OutOfHome.Models.Views;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace OutOfHome.Exports
 {
-    public class BoardPropertyGetter
+    public class BoardPropertyGetter : PropertyGetter
     {
         private const string GoogleMapLink = @"https://www.google.com/maps/place/";
         private const string GoogleStreetsViewLink = @"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=";
@@ -57,9 +58,9 @@ namespace OutOfHome.Exports
             BoardProperty.Provider => board.Provider,
             BoardProperty.Supplier => board.Supplier,
             BoardProperty.SupplierCode => board.SupplierCode,
-            BoardProperty.Region => board.Address.Region,
+            BoardProperty.Region => board.Address.City.Region,
             BoardProperty.City => board.Address.City,
-            BoardProperty.Address => board.Address.FormattedAddress,
+            BoardProperty.Address => GetFormattedAddress(board.Address),
             BoardProperty.Side => board.Side,
             BoardProperty.Kind => board.Type,
             BoardProperty.Size => board.Size,
@@ -70,7 +71,7 @@ namespace OutOfHome.Exports
             BoardProperty.URL_GoogleMapPoint => new Uri(GoogleMapLink + board.Location?.ToString()),
             BoardProperty.URL_StreetsView => new Uri(GoogleStreetsViewLink + board.Location?.ToString()),
             BoardProperty.Light => board.Lighting ? "+" : "-",
-            BoardProperty.Price => (board as IHaveSupplierContent)?.Price,
+
             BoardProperty.DoorsId => board.DoorsInfo?.DoorsID,
             BoardProperty.OTS => board.DoorsInfo?.OTS,
             BoardProperty.GRP => board.DoorsInfo?.GRP,
@@ -78,11 +79,18 @@ namespace OutOfHome.Exports
             BoardProperty.Street => board.Address.Street,
             BoardProperty.StreetNumber => board.Address.StreetNumber,
             BoardProperty.AddressDescription => board.Address.Description,
-            BoardProperty.OccSource => throw new NotImplementedException(),
             BoardProperty.Custom => GetPropertyAspectValueFrom(board),
             BoardProperty.Color => (board as IColored)?.Color,
+
+            BoardProperty.OccSource => (board as IHaveSupplierContent)?.Occupation?.OriginOccupationString,
+
             _ => throw new Exception($"There is no implemented getter in GetPropertyValueFrom for FieldKind {this.Kind}"),
         };
+        public override object GetPropertyValueFrom(object source)
+        {
+            if(source == null) throw new ArgumentNullException();
+            return GetPropertyValueFrom(source as Board);
+        }
         public object GetPropertyValueFrom(BaseBoardModelView board) => this.Kind switch
         {
             BoardProperty.ProviderID => board.ProviderID,
@@ -110,7 +118,7 @@ namespace OutOfHome.Exports
             BoardProperty.URL_StreetsView => new Uri(GoogleStreetsViewLink + GetFormattedLocation(board)),
             
             BoardProperty.Light => board.Lighting ? "+" : "-",
-            BoardProperty.Price => (board as IHaveSupplierContent)?.Price,
+
             BoardProperty.DoorsId => NullableOrNull(board.DoorsDix),
             BoardProperty.OTS => NullableOrNull(board.OTS),
             BoardProperty.GRP => NullableOrNull(board.GRP),
@@ -123,7 +131,23 @@ namespace OutOfHome.Exports
 
             _ => throw new Exception($"There is no implemented getter in GetPropertyValueFrom for FieldKind {this.Kind}"),
         };
+        public object GetPropertyValueFrom(BaseBoardModelView board, DateTimePeriod period) =>
+            this.Kind == BoardProperty.Price ? (board as IHaveSupplierContent)?.Price?.GetValue(period) : GetPropertyValueFrom(board);
+        public object GetPropertyValueFrom(Board board, DateTimePeriod period) =>
+            this.Kind == BoardProperty.Price ? (board as IHaveSupplierContent)?.Price?.GetValue(period) : GetPropertyValueFrom(board);
         private static string GetFormattedLocation(BaseBoardModelView board) => string.Format(CultureInfo.InvariantCulture, "{0:0.00000000},{1:0.00000000}", board.Latitude, board.Longitude);
+        private static string GetFormattedAddress (BoardAddress address)
+        {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder(address.Street);
+
+            if(!string.IsNullOrEmpty(address.StreetNumber))
+                builder.Append(", ").Append(address.StreetNumber);
+
+            if(!string.IsNullOrEmpty(address.Description))
+                builder.Append(", ").Append(address.Description);
+            
+            return builder.ToString();
+        }
         private static object NullableOrNull(int? val) => val.HasValue ? val.Value as object : null;
         private static object NullableOrNull(double? val) => val.HasValue ? val.Value as object : null;              
         protected virtual string GetPropertyAspectValueFrom(object item)

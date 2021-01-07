@@ -1,8 +1,10 @@
 ﻿using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
-using OutOfHome.Exports.Excel.Models;
-using OutOfHome.Models.Occupation;
+using OutOfHome.Exports.Excel.DocumentModels;
+using OutOfHome.Models;
+using OutOfHome.Models.Boards;
+using OutOfHome.Models.Boards.SupplierInfo;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,40 +13,32 @@ namespace OutOfHome.Exports.Excel
 {
     internal static class ExcelExtentions
     {
-        internal static int InsertTable(this ExcelWorksheet worksheet, int rowsNumber, SheetSchema schema, bool addOccupation)
+        internal static int InsertTable(this ExcelWorksheet worksheet, int rowsNumber, Dictionary<BoardExcelField, int> dic, SheetSchema schema, List<DateTimePeriod> drawingPeriods)
         {
             const int headerRow = 1;
-            var columns = schema.TableColumns;
 
-            foreach (var field in columns)
+            foreach(var pair in dic)
             {
-                var columnLetter = field.ColumnLetter;
-                worksheet.Cells[columnLetter + headerRow.ToString()].Value = field.Name;
-                var col = worksheet.Column(columns.IndexOf(field) + 1);
-                col.Style.HorizontalAlignment = field.GetDefaultAlign();
-                col.Width = field.ColumnWidth;
-                if (field.NumberFormat != null)
-                    col.Style.Numberformat.Format = field.NumberFormat;
+                worksheet.Cells[headerRow, pair.Value].Value = pair.Key.Name;
+                var col = worksheet.Column(pair.Value);
+                col.Style.HorizontalAlignment = pair.Key.GetDefaultAlign();
+                col.Width = pair.Key.ColumnWidth;
+                if (pair.Key.NumberFormat != null)
+                    col.Style.Numberformat.Format = pair.Key.NumberFormat;
             }
-            int column = columns.Count;
-            if(addOccupation)
+            int column = dic.Count;
+
+            if(drawingPeriods.Count > 0)
             {
-            
-                int month = DateTime.Now.Month;
-                while(month <= 12)
+                foreach(var period in drawingPeriods)
                 {
-                    var columnLetter = SheetSchema.GetColumnLetter(++column);
-                    worksheet.Cells[columnLetter + headerRow.ToString()].Value = GetMonthName(month);
+                    worksheet.Cells[headerRow, ++column].Value = Months[period.Start.Month] + '.' + period.Start.ToString("yy");
                     worksheet.Column(column).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                     worksheet.Column(column).Width = 7;
-                    month++;
                 }
             }
-
-            const int firstRow = 1, firstColumn = 1;
-            int lastRow = headerRow + rowsNumber;
-            int lastColumn = column;
-            ExcelRange rg = worksheet.Cells[firstRow, firstColumn, lastRow, lastColumn];
+            
+            ExcelRange rg = worksheet.Cells[1, 1, rowsNumber + 1, column];
             rg.FormatRange(schema.FontColor, schema.Font);
             rg.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             const string tableName = "Grid";
@@ -77,7 +71,6 @@ namespace OutOfHome.Exports.Excel
                 cell.Style.Font.Color.SetColor(OfficeOpenXml.Drawing.eThemeSchemeColor.Hyperlink);
             }       
         }
-
 
         private static void FormatRange(this ExcelRange range, System.Drawing.Color foreColor, System.Drawing.Font font)
         {
