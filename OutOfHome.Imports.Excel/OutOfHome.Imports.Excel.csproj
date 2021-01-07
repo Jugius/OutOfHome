@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="5.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OutOfHome.Helpers.Cities\OutOfHome.Helpers.Cities.csproj" />
+    <ProjectReference Include="..\OutOfHome.Models\OutOfHome.Models.csproj" />
+  </ItemGroup>
+
+</Project>
