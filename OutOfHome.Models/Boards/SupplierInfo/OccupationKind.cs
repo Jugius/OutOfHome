@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace OutOfHome.Models.Occupation
+namespace OutOfHome.Models.Boards.SupplierInfo
 {
     public enum OccupationKind
     {
@@ -9,7 +8,8 @@ namespace OutOfHome.Models.Occupation
         Reserved = 2,
         Booked = 3,
         Unavailable = 4,
-        Unrecognized = 5
+        Unrecognized = 5,
+        OutOfRange = 6
     }
     public static class OccKindExt
     {
@@ -19,7 +19,8 @@ namespace OutOfHome.Models.Occupation
             { OccupationKind.Reserved, "Резерв" },
             { OccupationKind.Unavailable, "Неактив" },
             { OccupationKind.Free, "" },
-            { OccupationKind.Unrecognized, "Неизв"}
+            { OccupationKind.Unrecognized, "Неизв"},
+            { OccupationKind.OutOfRange, "RO"}
         };
         public static string GetName(this OccupationKind kind) => OccupationStatus[kind];
     }

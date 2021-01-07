@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OutOfHome.Models
+namespace OutOfHome.Models.Boards
 {
     public class Board
     {

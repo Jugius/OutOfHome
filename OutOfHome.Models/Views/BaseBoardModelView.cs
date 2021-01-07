@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using OutOfHome.Models.Boards;
+using System;
 
 namespace OutOfHome.Models.Views
 {
@@ -38,10 +37,11 @@ namespace OutOfHome.Models.Views
             this.Supplier = board.Supplier;
             this.Code = board.SupplierCode;
 
-            this.Region = board.Address.Region;
-            this.City = board.Address.City;
+            this.Region = board.Address.City.Region;
+            this.City = board.Address.City.Name;
             this.Street = board.Address.Street;
             this.StreetHouse = board.Address.StreetNumber;
+            this.AddressDescription = board.Address.Description;
 
             if(board.DoorsInfo != null)
             {
@@ -75,6 +75,7 @@ namespace OutOfHome.Models.Views
             this.City = board.City;
             this.Street = board.Street;
             this.StreetHouse = board.StreetHouse;
+            this.AddressDescription = board.AddressDescription;
 
             this.GRP = board.GRP;
             this.OTS = board.OTS;

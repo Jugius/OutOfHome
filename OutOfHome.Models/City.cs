@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Reflection.Emit;
 
 namespace OutOfHome.Models
 {
     public class City : IEquatable<City>
     {
+        public Guid ID { get; set; }
         public string Name { get; set; }
         public string Region { get; set; }
         public int Population { get; set; }
@@ -13,6 +15,7 @@ namespace OutOfHome.Models
         public int? DoorsId { get; set; }
         public string DoorsShortName { get; set; }
         public int? BmaId { get; set; }
+        public string OctagonId { get; set; }
 
         public override bool Equals(object other)
         {

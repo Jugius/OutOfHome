@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
-namespace OutOfHome.Models.Occupation
+namespace OutOfHome.Models.Boards.SupplierInfo
 {
     public class OccupationPeriod
     {
-        public DateTime Begin { get; set; }
-        public DateTime End { get; set; }
+        public DateTimePeriod Period { get; set; }
         public OccupationKind OccupationKind { get; set; }
+        [JsonIgnore]
         public string OriginalString { get; set; }
     }
 }

@@ -1,11 +1,20 @@
 ﻿using System;
 
-namespace OutOfHome.Models
+namespace OutOfHome.Models.Boards
 {
     public class DoorsInfo
     {
+        /// <summary>
+        /// Ots
+        /// </summary>
         public int OTS { get; set; }
+        /// <summary>
+        /// Grp
+        /// </summary>
         public float GRP { get; set; }
+        /// <summary>
+        /// Dix
+        /// </summary>
         public int DoorsID { get; set; }
         /// <summary>
         /// NUMBER_INS (номер ламели для инспекций)

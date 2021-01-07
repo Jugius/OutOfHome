@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OutOfHome.Models
+namespace OutOfHome.Models.Boards
 {
     public interface IGrid
     {        
