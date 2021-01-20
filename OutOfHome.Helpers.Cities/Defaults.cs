@@ -110,7 +110,7 @@ namespace OutOfHome.Helpers.Cities
                 new City { Name = "Лубны", Region = RegionsDb.Poltavskaya, BmaId = null, DoorsId = 50, OctagonId = null, DoorsShortName = "Lub", Center = new Models.Location(50.01831, 32.98833), IsCapital = false, IsRegionalCenter= false, Population = 45379},
                 new City { Name = "Светловодск", Region = RegionsDb.Kirovogradskaya, BmaId = null, DoorsId = 58, OctagonId = null, DoorsShortName = "Sve", Center = new Models.Location(49.0515, 33.20309), IsCapital = false, IsRegionalCenter= false, Population = 44857},
                 new City { Name = "Прилуки", Region = RegionsDb.Chernigovskaya, BmaId = null, DoorsId = 63, OctagonId = null, DoorsShortName = "Pry", Center = new Models.Location(50.58877, 32.382), IsCapital = false, IsRegionalCenter= false, Population = 54167},
-                new City { Name = "Берегово", Region = RegionsDb.Zakarpatskaya, BmaId = null, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 23732},
+                new City { Name = "Берегово", Region = RegionsDb.Zakarpatskaya, BmaId = 118, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 23732},
                 new City { Name = "Бережаны", Region = RegionsDb.Ternopolskaya, BmaId = null, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 17697},
                 new City { Name = "Богородчаны", Region = RegionsDb.IvanoFrankovskaya, BmaId = null, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 8222},
                 new City { Name = "Болехов", Region = RegionsDb.IvanoFrankovskaya, BmaId = null, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 10476},
@@ -193,6 +193,7 @@ namespace OutOfHome.Helpers.Cities
                 new City { Name = "Збараж", Region = RegionsDb.Ternopolskaya, BmaId = null, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 13000},
                 new City { Name = "Ирпень", Region = RegionsDb.Kievskaya, BmaId = null, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 60000},
                 new City { Name = "Калиновка", Region = RegionsDb.Vinnitskaya, BmaId = null, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 18800},
+                new City { Name = "Тячев", Region = RegionsDb.Zakarpatskaya, BmaId = 117, DoorsId = null, OctagonId = null, DoorsShortName = null, Center = null, IsCapital = false, IsRegionalCenter= false, Population = 9000},
 
 
 
