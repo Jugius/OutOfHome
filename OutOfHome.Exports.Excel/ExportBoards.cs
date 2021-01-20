@@ -75,7 +75,7 @@ namespace OutOfHome.Exports.Excel
                                 string link = column.GetPropertyValueFrom(board)?.ToString();
 
                                 if(!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri uri))
-                                    cell.WriteHyperlink(column.Name, uri.ToString(), false, true, linksAsFormula);
+                                    cell.WriteHyperlink(column.Name, Uri.EscapeUriString(uri.ToString()), false, true, linksAsFormula);
                             }
                             else if(column.Kind == BoardProperty.Color)
                             {
@@ -164,8 +164,8 @@ namespace OutOfHome.Exports.Excel
                             {
                                 string link = column.GetPropertyValueFrom(board)?.ToString();
 
-                                if (!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri uri))
-                                    cell.WriteHyperlink(column.Name, uri.ToString(), false, true, linksAsFormula);
+                                if(!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri uri))
+                                    cell.WriteHyperlink(column.Name, Uri.EscapeUriString(uri.ToString()), false, true, linksAsFormula);
                             }
                             else
                             {
