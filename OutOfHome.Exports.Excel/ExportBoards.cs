@@ -40,7 +40,7 @@ namespace OutOfHome.Exports.Excel
             return periods;
         }
         
-        public static Task Export(List<ExcelBoard> boards, ExcelFileInfo fileInfo)
+        public static Task<string> Export(List<ExcelBoard> boards, ExcelFileInfo fileInfo, IProgress<DataProgress> progress = null, CancellationToken cancellationToken = default)
         {
             var task = Task.Run(() => 
             {
@@ -48,6 +48,8 @@ namespace OutOfHome.Exports.Excel
                 BoardSheetSchema schema = fileInfo.SheetSchema as BoardSheetSchema;
                 List<BoardExcelField> schemaTableColumns = schema.TableColumns.Cast<BoardExcelField>().ToList();
                 Dictionary<BoardExcelField, int> dic = GetColumnsDictionary(schemaTableColumns);
+
+                int _itemsDone = 0, _prevProgress = 0;
 
                 bool needDrawOccupation = schema.DrawOccupation && boards.Any(a => a.Occupation != null);
                 List<DateTimePeriod> drawingPeriods = needDrawOccupation ? BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
@@ -114,21 +116,33 @@ namespace OutOfHome.Exports.Excel
                                 }
                             }                            
                         }
+                        _itemsDone++;
                         row++;
+                        if(progress != null)
+                        {
+                            int newProgress = _itemsDone * 100 / _itemsTotal;
+                            if(newProgress != _prevProgress)
+                            {
+                                _prevProgress = newProgress;
+                                progress.Report(new DataProgress(newProgress, "Выполнено: " + _itemsDone + " / " + _itemsTotal));
+                            }
+                        }
                     }
 
                     worksheet.InsertTable(_itemsTotal, dic, schema, drawingPeriods);
                     try 
                     {
-                        package.SaveAs(new System.IO.FileInfo(fileInfo.FilePath));
+                        if(progress != null)
+                            progress.Report(new DataProgress(100, "Завершено. Сохраняем файл..."));
 
+                        package.SaveAs(new System.IO.FileInfo(fileInfo.FilePath));
+                        return fileInfo.FilePath;
                     }
                     catch(Exception ex) {
                         throw new Exception("Ошибка сохранения файла: " + fileInfo.FilePath, ex);
                     }
-
                 }
-            });
+            }, cancellationToken);
             return task;        
         }
         public static Task Export(List<Board> boards, ExcelFileInfo fileInfo, IProgress<DataProgress> progress, CancellationToken cancellationToken = default)
@@ -226,7 +240,7 @@ namespace OutOfHome.Exports.Excel
                         throw new Exception("Ошибка сохранения файла: " + fileInfo.FilePath, ex);
                     }
                 }
-            });
+            }, cancellationToken);
             return task;
         }
         private static Dictionary<BoardExcelField, int> GetColumnsDictionary(List<BoardExcelField> tableColumns)
