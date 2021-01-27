@@ -60,7 +60,7 @@ namespace OutOfHome.Exports
             BoardProperty.SupplierCode => board.SupplierCode,
             BoardProperty.Region => board.Address.City.Region,
             BoardProperty.City => board.Address.City,
-            BoardProperty.Address => GetFormattedAddress(board.Address),
+            BoardProperty.Address => board.Address.GetFormattedAddress(),
             BoardProperty.Side => board.Side,
             BoardProperty.Kind => board.Type,
             BoardProperty.Size => board.Size,
@@ -103,7 +103,7 @@ namespace OutOfHome.Exports
             BoardProperty.Street => board.Street,
             BoardProperty.StreetNumber => board.StreetHouse,
             BoardProperty.AddressDescription => board.AddressDescription,
-            BoardProperty.Address => board.GetFormattedAddress(AddressFormat.Street_StreeNum),
+            BoardProperty.Address => board.GetFormattedAddress(),
 
             BoardProperty.Side => board.Side,
             BoardProperty.Kind => board.Type,
@@ -136,18 +136,7 @@ namespace OutOfHome.Exports
         public object GetPropertyValueFrom(Board board, DateTimePeriod period) =>
             this.Kind == BoardProperty.Price ? (board as IHaveSupplierContent)?.Price?.GetValue(period) : GetPropertyValueFrom(board);
         private static string GetFormattedLocation(BaseBoardModelView board) => string.Format(CultureInfo.InvariantCulture, "{0:0.00000000},{1:0.00000000}", board.Latitude, board.Longitude);
-        private static string GetFormattedAddress (BoardAddress address)
-        {
-            System.Text.StringBuilder builder = new System.Text.StringBuilder(address.Street);
-
-            if(!string.IsNullOrEmpty(address.StreetNumber))
-                builder.Append(", ").Append(address.StreetNumber);
-
-            if(!string.IsNullOrEmpty(address.Description))
-                builder.Append(", ").Append(address.Description);
-            
-            return builder.ToString();
-        }
+        
         private static object NullableOrNull(int? val) => val.HasValue ? val.Value as object : null;
         private static object NullableOrNull(double? val) => val.HasValue ? val.Value as object : null;              
         protected virtual string GetPropertyAspectValueFrom(object item)

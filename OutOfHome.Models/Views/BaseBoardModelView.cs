@@ -93,15 +93,6 @@ namespace OutOfHome.Models.Views
             this.PhotoDoors = board.PhotoDoors;
             this.Map = board.Map;
             this.MapDoors = board.MapDoors;
-        }
-        public virtual string GetFormattedAddress(AddressFormat format)
-        {
-            return format switch
-            {
-                AddressFormat.Street_StreeNum => string.IsNullOrEmpty(this.StreetHouse) ? this.Street : (this.Street + ", " + this.StreetHouse),
-                AddressFormat.City_Street_StreeNum => this.City + ", " + GetFormattedAddress(AddressFormat.Street_StreeNum),
-                _ => throw new Exception($"Не реализован формат {format} в процедуре GetFormattedAddress"),
-            };
-        }
+        }       
     }
 }

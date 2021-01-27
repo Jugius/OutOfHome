@@ -88,7 +88,7 @@ namespace OutOfHome.Exports.GoogleMaps
                 nameParts.Add(b.Code);
 
             if (_parameters.NameAddress)
-                nameParts.Add(b.GetFormattedAddress(AddressFormat.Street_StreeNum));
+                nameParts.Add(b.GetFormattedAddress());
 
             var placemark = new Placemark();
 
