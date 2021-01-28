@@ -214,5 +214,26 @@ namespace OutOfHome.Models
 
             return double.TryParse($"{numberParts[0]}.{numberParts[1]}", parseStyle, parsePointFormatter, out result);
         }
+        public static double ConvertDegreeAngleToDouble(string point)
+        {
+            //Example: 17.21.18S
+
+            var multiplier = (point.Contains('S') || point.Contains('W')) ? -1 : 1; //handle south and west
+
+            point = System.Text.RegularExpressions.Regex.Replace(point, "[^0-9.]", ""); //remove the characters
+
+            var pointArray = point.Split('.'); //split the string.
+
+            //Decimal degrees = 
+            //   whole number of degrees, 
+            //   plus minutes divided by 60, 
+            //   plus seconds divided by 3600
+
+            var degrees = Double.Parse(pointArray[0]);
+            var minutes = Double.Parse(pointArray[1]) / 60;
+            var seconds = Double.Parse(pointArray[2]) / 3600;
+
+            return (degrees + minutes + seconds) * multiplier;
+        }
     }
 }
