@@ -153,7 +153,7 @@ namespace OutOfHome.Exports
         }
         static readonly Dictionary<BoardProperty, string> DefaultNames = new Dictionary<BoardProperty, string>()
         {
-            { BoardProperty.ProviderID, "код" },
+            { BoardProperty.ProviderID, "ID" },
             { BoardProperty.Provider, "источник" },
             { BoardProperty.Supplier, "оператор" },
             { BoardProperty.SupplierCode, "код оператора" },
@@ -175,7 +175,7 @@ namespace OutOfHome.Exports
             { BoardProperty.OTS, "OTS" },
             { BoardProperty.GRP, "GRP" },
             { BoardProperty.Location, "коорд" },
-            { BoardProperty.OccSource, "occup" },
+            { BoardProperty.OccSource, "занятость ориг. стр." },
             { BoardProperty.Street, "улица" },
             { BoardProperty.StreetNumber, "дом" },
             { BoardProperty.AddressDescription, "описание"},
