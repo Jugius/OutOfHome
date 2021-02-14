@@ -29,6 +29,8 @@ namespace OutOfHome.Helpers
         }
         public static void NormalizeAddressString(this Board board)
         {
+            if(board.Address.Street == null)
+                return;
             string tmp = board.Address.Street.Trim();
             board.Address.Street = DeleteSpaces.Replace(tmp, " ");            
         }
