@@ -4,7 +4,7 @@ namespace OutOfHome.Helpers
 {
     internal static partial class Dictionaries
     {
-        
+
         internal static Dictionary<string, string> DictionaryTypes = new Dictionary<string, string>
         {
             { "Digital", "Цифровая панель" },
@@ -18,6 +18,9 @@ namespace OutOfHome.Helpers
             { "Беклайт вертикаль", "Бэклайт" },
             { "Брандмауэр вертикаль","Брандмауэр"},
             { "Флэкс", "Брандмауэр" },
+            { "Остановочный комплекс","Остановка"},
+            { "Баннер","Мост"},
+            { "Неон","Накрышная установка"},
         };
     }
 }
