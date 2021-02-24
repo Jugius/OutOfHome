@@ -130,9 +130,8 @@ namespace OutOfHome.Models
 
             return new Location(Double.Parse($"{parts[0]}.{parts[1]}", parsePointFormatter), Double.Parse($"{parts[2]}.{parts[3]}", parsePointFormatter));
         }
-
         protected virtual double ToRadian(double val)
-        {
+        {            
             return (Math.PI / 180.0) * val;
         }
         public virtual Distance DistanceBetween(Location location)
