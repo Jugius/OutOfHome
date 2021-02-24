@@ -24,6 +24,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutOfHome.Imports.Excel", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutOfHome.Binds", "OutOfHome.Binds\OutOfHome.Binds.csproj", "{65D9A5D1-E908-44AA-BE8E-68DED5D037E2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutOfHome.Pois", "OutOfHome.Pois\OutOfHome.Pois.csproj", "{DBF30F0C-F4BB-46B5-B656-A7F1E96DEAAF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutOfHome.PoisTests", "OutOfHome.PoisTests\OutOfHome.PoisTests.csproj", "{B5E2B219-7257-45C8-ADDC-653A0D149DEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +66,14 @@ Global
 		{65D9A5D1-E908-44AA-BE8E-68DED5D037E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65D9A5D1-E908-44AA-BE8E-68DED5D037E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65D9A5D1-E908-44AA-BE8E-68DED5D037E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBF30F0C-F4BB-46B5-B656-A7F1E96DEAAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBF30F0C-F4BB-46B5-B656-A7F1E96DEAAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBF30F0C-F4BB-46B5-B656-A7F1E96DEAAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBF30F0C-F4BB-46B5-B656-A7F1E96DEAAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5E2B219-7257-45C8-ADDC-653A0D149DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5E2B219-7257-45C8-ADDC-653A0D149DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5E2B219-7257-45C8-ADDC-653A0D149DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5E2B219-7257-45C8-ADDC-653A0D149DEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
