@@ -1,5 +1,6 @@
 ﻿using OfficeOpenXml;
 using OutOfHome.Exports.Excel.DocumentModels;
+using OutOfHome.Exports.Excel.Extentions;
 using OutOfHome.Models;
 using OutOfHome.Models.Boards;
 using OutOfHome.Models.Boards.SupplierInfo;
@@ -9,36 +10,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OutOfHome.Exports.Excel
+namespace OutOfHome.Exports.Excel.Exporters
 {
-    public static class ExportBoards
+    public static class BoardsExporter
     {
-        static ExportBoards()
+        static BoardsExporter()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
-        private static List<DateTimePeriod> BuildMonthPeriods(DateTimePeriod period)
-        {            
-            if(period.Start.Month == period.End.Month && period.Start.Year == period.End.Year)
-                return new List<DateTimePeriod>(1) { period };
-
-            DateTime first = period.Start;
-            DateTime last = new DateTime(first.Year, first.Month, 1).AddMonths(1).AddDays(-1);
-
-            List<DateTimePeriod> periods = new List<DateTimePeriod>() { new DateTimePeriod(first, last) };
-
-            while(last.Month != period.End.Month || last.Year != period.End.Year)
-            {
-                first = new DateTime(first.Year, first.Month, 1).AddMonths(1);
-                last = first.AddMonths(1).AddDays(-1);
-                if(last > period.End)
-                    last = period.End;
-
-                periods.Add(new DateTimePeriod(first, last));
-            }
-
-            return periods;
-        }
+        
         
         public static Task<string> Export(List<ExcelBoard> boards, ExcelFileInfo fileInfo, IProgress<DataProgress> progress = null, CancellationToken cancellationToken = default)
         {
@@ -52,7 +32,7 @@ namespace OutOfHome.Exports.Excel
                 int _itemsDone = 0, _prevProgress = 0;
 
                 bool needDrawOccupation = schema.DrawOccupation && boards.Any(a => a.Occupation != null);
-                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
+                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
 
                 bool needDrawPrice = schemaTableColumns.Any(a => a.Kind == BoardProperty.Price) && boards.Any(a => a.Price != null);
                 DateTimePeriod pricePeriod = new DateTimePeriod { Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1), End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(2).AddSeconds(-1) };
@@ -157,7 +137,7 @@ namespace OutOfHome.Exports.Excel
                 int _itemsDone = 0, _prevProgress = 0;
 
                 bool needDrawOccupation = schema.DrawOccupation && boards.Any(a => (a is IHaveSupplierContent));
-                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
+                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
 
                 using (ExcelPackage package = new ExcelPackage())
                 {

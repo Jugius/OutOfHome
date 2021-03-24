@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace OutOfHome.Exports.Excel
+namespace OutOfHome.Exports.Excel.Extentions
 {
     internal static class ExcelExtentions
     {
@@ -87,18 +87,11 @@ namespace OutOfHome.Exports.Excel
         }
         public static ExcelHorizontalAlignment GetDefaultAlign(this BoardPropertyGetter field)
         {
-            switch (field.Kind)
+            return field.Kind switch
             {
-                case BoardProperty.Side:
-                case BoardProperty.Size:
-                case BoardProperty.Light:
-                case BoardProperty.URL_Map:
-                case BoardProperty.URL_Photo:
-                case BoardProperty.OTS:
-                case BoardProperty.GRP:
-                    return ExcelHorizontalAlignment.Center;
-                default: return ExcelHorizontalAlignment.Left;
-            }
+                BoardProperty.Side or BoardProperty.Size or BoardProperty.Light or BoardProperty.URL_Map or BoardProperty.URL_Photo or BoardProperty.OTS or BoardProperty.GRP => ExcelHorizontalAlignment.Center,
+                _ => ExcelHorizontalAlignment.Left,
+            };
         }
         private static readonly Dictionary<int, string> Months = new Dictionary<int, string>
         {
