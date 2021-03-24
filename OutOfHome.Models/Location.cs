@@ -130,9 +130,13 @@ namespace OutOfHome.Models
 
             return new Location(Double.Parse($"{parts[0]}.{parts[1]}", parsePointFormatter), Double.Parse($"{parts[2]}.{parts[3]}", parsePointFormatter));
         }
-        protected virtual double ToRadian(double val)
+        private static double ConvertDegreesToRadians(double angle)
         {            
-            return (Math.PI / 180.0) * val;
+            return (Math.PI / 180.0) * angle;
+        }
+        private static double ConvertRadiansToDegrees(double angle)
+        {
+            return 180.0 * angle / Math.PI;
         }
         public virtual Distance DistanceBetween(Location location)
         {
@@ -145,18 +149,34 @@ namespace OutOfHome.Models
 
             double earthRadius = (units == DistanceUnit.Miles) ? Distance.EarthRadiusInMiles : Distance.EarthRadiusInKilometers;
 
-            double latRadian = ToRadian(location.Latitude - this.Latitude);
-            double longRadian = ToRadian(location.Longitude - this.Longitude);
+            double latRadian = ConvertDegreesToRadians(location.Latitude - this.Latitude);
+            double longRadian = ConvertDegreesToRadians(location.Longitude - this.Longitude);
 
             double a = Math.Pow(Math.Sin(latRadian / 2.0), 2) +
-                Math.Cos(ToRadian(this.Latitude)) *
-                Math.Cos(ToRadian(location.Latitude)) *
+                Math.Cos(ConvertDegreesToRadians(this.Latitude)) *
+                Math.Cos(ConvertDegreesToRadians(location.Latitude)) *
                 Math.Pow(Math.Sin(longRadian / 2.0), 2);
 
             double c = 2.0 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
 
             double distance = earthRadius * c;
             return new Distance(distance, units);
+        }
+        public virtual double AzimuthTo(Location location)
+        {
+            if(location == null) throw new ArgumentNullException(nameof(location));
+
+            var lat1 = ConvertDegreesToRadians(this.Latitude);
+            var lat2 = ConvertDegreesToRadians(location.Latitude);
+            var long1 = ConvertDegreesToRadians(location.Longitude);
+            var long2 = ConvertDegreesToRadians(this.Longitude);
+            var dLon = long1 - long2;
+
+            var y = Math.Sin(dLon) * Math.Cos(lat2);
+            var x = Math.Cos(lat1) * Math.Sin(lat2) - Math.Sin(lat1) * Math.Cos(lat2) * Math.Cos(dLon);
+            var brng = Math.Atan2(y, x);
+
+            return (ConvertRadiansToDegrees(brng) + 360) % 360;
         }
 
         public override bool Equals(object obj)

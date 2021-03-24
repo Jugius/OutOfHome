@@ -1,6 +1,6 @@
 ﻿using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using OutOfHome.Models.Binds;
+using OutOfHome.Models.Pois;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -33,7 +33,7 @@ namespace OutOfHome.Imports.Excel
             //Send it back
             return collection;
         }
-        public static IEnumerable<Bind> ConvertSheetToObjects(this ExcelWorksheet worksheet, IEnumerable<BindPropertySetter> setters)
+        public static IEnumerable<Poi> ConvertSheetToObjects(this ExcelWorksheet worksheet, IEnumerable<PoiPropertySetter> setters)
         {
             var rows = worksheet.Cells
                 .Select(cell => cell.Start.Row)
@@ -43,7 +43,7 @@ namespace OutOfHome.Imports.Excel
             Dictionary<PropertySetter, int> dic = GetPropertySettersDictionary(setters);
             var collection = rows.Skip(1).Select(row =>
             {
-                var tnew = new Bind { Address = new BindAddress { Location = new OutOfHome.Models.Location(0, 0) } };
+                var tnew = new Poi(null, new OutOfHome.Models.Location(0, 0), "Excel");
                 foreach(var setter in setters)
                 {
                     var val = worksheet.Cells[row, dic[setter]];

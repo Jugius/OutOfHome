@@ -21,8 +21,12 @@ namespace OutOfHome.Models.Pois
 			if(base.FormattedAddress != UNKNOWN)
 				return base.FormattedAddress;
 			else
-			{
-				var sb = new StringBuilder(3);
+			{				
+				var sb = new StringBuilder(4);
+
+				//if(!string.IsNullOrWhiteSpace(Country))
+				//	sb.Append(Country).Append(", ");
+
 				if(!string.IsNullOrWhiteSpace(City))
 					sb.Append(City).Append(", ");
 

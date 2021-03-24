@@ -20,6 +20,7 @@
         Size = 403,
         Light = 404,
         Location = 405,
+        Angle = 406,
 
         URL_Photo = 501,
         URL_Map = 502,
@@ -37,6 +38,12 @@
 
         Custom = 801,
 
-        Color = 901
+        Color = 901,
+
+        BindLocation = 1001,
+        BindAddress = 1002,
+        BindDescription = 1003,
+        BindDistance = 1004,
+        BindMap = 1005
     }
 }

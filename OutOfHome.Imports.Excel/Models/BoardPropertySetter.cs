@@ -10,26 +10,10 @@ namespace OutOfHome.Imports
 {
     public class BoardPropertySetter : PropertySetter
     {
+        private static readonly HashSet<BoardProperty> _required = new() { BoardProperty.Supplier, BoardProperty.City, BoardProperty.Street, BoardProperty.Side, BoardProperty.Kind, BoardProperty.Size, BoardProperty.Location };
         public BoardProperty Kind { get; }
         public int ColumnIndex { get; set; }
-        private bool Required 
-        {
-            get {
-                switch(this.Kind)
-                {                    
-                    case BoardProperty.Supplier:
-                    case BoardProperty.City:
-                    case BoardProperty.Street:
-                    case BoardProperty.Side:
-                    case BoardProperty.Kind:
-                    case BoardProperty.Size:
-                    case BoardProperty.Location:
-                        return true;
-                    default: return false;
-
-                }
-            }
-        }
+        private bool Required => _required.Contains(this.Kind);
         public BoardPropertySetter(BoardProperty kind)
         {
             this.Kind = kind;
@@ -69,7 +53,7 @@ namespace OutOfHome.Imports
 
                 case BoardProperty.City:
                     
-                    var city = OutOfHome.Helpers.Cities.Defaults.GetCityByName(val);
+                    var city = Helpers.Cities.Defaults.GetCityByName(val);
                     
                     if(city == null)
                         board.Address.City.Name = val;
@@ -147,23 +131,23 @@ namespace OutOfHome.Imports
         {
             var list = new List<BoardPropertySetter>(20)
             {
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Region),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.City),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Supplier),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.SupplierCode),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Street),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.StreetNumber),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.AddressDescription),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Kind),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Size),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Side),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.DoorsId),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.OTS),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.GRP),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.URL_Photo),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.URL_Map),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Price),
-                 new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Location),
+                 new BoardPropertySetter(BoardProperty.Region),
+                 new BoardPropertySetter(BoardProperty.City),
+                 new BoardPropertySetter(BoardProperty.Supplier),
+                 new BoardPropertySetter(BoardProperty.SupplierCode),
+                 new BoardPropertySetter(BoardProperty.Street),
+                 new BoardPropertySetter(BoardProperty.StreetNumber),
+                 new BoardPropertySetter(BoardProperty.AddressDescription),
+                 new BoardPropertySetter(BoardProperty.Kind),
+                 new BoardPropertySetter(BoardProperty.Size),
+                 new BoardPropertySetter(BoardProperty.Side),
+                 new BoardPropertySetter(BoardProperty.DoorsId),
+                 new BoardPropertySetter(BoardProperty.OTS),
+                 new BoardPropertySetter(BoardProperty.GRP),
+                 new BoardPropertySetter(BoardProperty.URL_Photo),
+                 new BoardPropertySetter(BoardProperty.URL_Map),
+                 new BoardPropertySetter(BoardProperty.Price),
+                 new BoardPropertySetter(BoardProperty.Location),
                  //new BoardPropertySetter(OutOfHome.Models.Boards.BoardProperty.Color)
             };
             int index = 0;

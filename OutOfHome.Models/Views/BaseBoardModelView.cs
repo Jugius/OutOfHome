@@ -22,6 +22,7 @@ namespace OutOfHome.Models.Views
         public int? DoorsDix { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public int? Angle { get; set; }
         public bool Lighting { get; set; }
         public virtual Uri Photo { get; set; }
         public virtual Uri Map { get; set; }
@@ -54,6 +55,7 @@ namespace OutOfHome.Models.Views
             
             this.Latitude = board.Location.Latitude;
             this.Longitude = board.Location.Longitude;
+            this.Angle = board.Angle;
 
             this.Side = board.Side;
             this.Size = board.Size;
@@ -83,6 +85,8 @@ namespace OutOfHome.Models.Views
 
             this.Latitude = board.Latitude;
             this.Longitude = board.Longitude;
+
+            this.Angle = board.Angle;
 
             this.Side = board.Side;
             this.Size = board.Size;

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OutOfHome.Models.Binds
+﻿namespace OutOfHome.Models.Pois
 {
-    public enum BindProperty
+    public enum PoiProperty
     {
         Provider = 101,
-        ProviderPlaceId = 102,
+        //ProviderPlaceId = 102,
 
         OriginalAddress = 201,
         Description = 202,
@@ -16,17 +12,17 @@ namespace OutOfHome.Models.Binds
         Region = 302,
         City = 303,
         District = 304,
-        Zip = 305,
+        //Zip = 305,
         Street = 306,
         StreetNumber = 307,
         FormattedAddress = 308,
-
-        Intersection = 401,
 
         Location = 501,
         Latitude = 502,
         Longitude = 503,
 
-        URL_Map = 601
+        URL_Map = 601,
+        
+        Color = 901
     }
 }
