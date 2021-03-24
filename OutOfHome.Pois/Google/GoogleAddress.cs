@@ -8,8 +8,8 @@ namespace OutOfHome.Pois.Google
     public class GoogleAddress : Models.ParsedAddress
     {
         const string ProviderGoogle = "Google";
-        public PlaceLocationType Type { get; private set; }
-        public GeometryLocationType LocationType { get; private set; }
+        public PlaceLocationType PlaceType { get; private set; }
+        public GeometryLocationType GeometryType { get; private set; }
         public string Intersection { get; set; }
         public string PlaceId { get; set; }
         public GoogleAddress(string formattedAddress, Models.Location location) : base(formattedAddress, location, ProviderGoogle) { }
@@ -115,8 +115,8 @@ namespace OutOfHome.Pois.Google
                 District = addressDistrict,
                 Intersection = addressIntersection,
                 PlaceId = result.PlaceId,
-                Type = result.Types.First(),
-                LocationType = result.Geometry.LocationType
+                PlaceType = result.Types.First(),
+                GeometryType = result.Geometry.LocationType
             };
         }
     }

@@ -42,7 +42,7 @@ namespace OutOfHome.Pois
 
                     foreach(var adr in addresses.Where(a => !a.Equals(basicAddress)))
                     {
-                        basicAddress.UpdatePropertiesFrom(adr);
+                        poi.UpdatePropertiesFrom(adr);
                     }
                     result.Addresses = addresses;
                     result.Poi = poi;
@@ -75,7 +75,7 @@ namespace OutOfHome.Pois
 
                 foreach(var adr in addresses.Where(a => !a.Equals(basicAddress)))
                 {
-                    basicAddress.UpdatePropertiesFrom(adr);
+                    poi.UpdatePropertiesFrom(adr);
                 }
                 result.Addresses = addresses;
                 result.Poi = poi;
@@ -96,18 +96,18 @@ namespace OutOfHome.Pois
         private static GoogleAddress GetBasicAddress(IEnumerable<GoogleAddress> addresses)
         {
             var priority = addresses.FirstOrDefault(a =>
-                (a.Type == GoogleApi.Entities.Common.Enums.PlaceLocationType.Street_Address && (a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop || a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center)) ||
-                (a.Type == GoogleApi.Entities.Common.Enums.PlaceLocationType.Route && a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center) ||
-                (a.Type == GoogleApi.Entities.Common.Enums.PlaceLocationType.Premise && a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop));
+                (a.PlaceType == GoogleApi.Entities.Common.Enums.PlaceLocationType.Street_Address && (a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop || a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center)) ||
+                (a.PlaceType == GoogleApi.Entities.Common.Enums.PlaceLocationType.Route && a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center) ||
+                (a.PlaceType == GoogleApi.Entities.Common.Enums.PlaceLocationType.Premise && a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop));
 
             return priority ?? addresses.First();
         }
         private static GoogleAddress GetBasicAddress(IEnumerable<GoogleAddress> addresses, Location location)
         {
             var priority = addresses.Where(a =>
-                (a.Type == GoogleApi.Entities.Common.Enums.PlaceLocationType.Street_Address && (a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop || a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center)) ||
-                (a.Type == GoogleApi.Entities.Common.Enums.PlaceLocationType.Route && a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center) ||
-                (a.Type == GoogleApi.Entities.Common.Enums.PlaceLocationType.Premise && a.LocationType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop));
+                (a.PlaceType == GoogleApi.Entities.Common.Enums.PlaceLocationType.Street_Address && (a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop || a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center)) ||
+                (a.PlaceType == GoogleApi.Entities.Common.Enums.PlaceLocationType.Route && a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Geometric_Center) ||
+                (a.PlaceType == GoogleApi.Entities.Common.Enums.PlaceLocationType.Premise && a.GeometryType == GoogleApi.Entities.Maps.Geocoding.Common.Enums.GeometryLocationType.Rooftop));
 
             GoogleAddress nearest = null;
             if(priority.Any())
