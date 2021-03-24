@@ -13,9 +13,18 @@ namespace OutOfHome.Models.Boards
         public string Size { get; set; }
         public string Type { get; set; }
         public bool Lighting { get; set; }
+        public int? Angle { get; set; }
         public DoorsInfo DoorsInfo { get; set; }
         public Uri Photo { get; set; }
         public Uri Map { get; set; }
-        public string Provider { get; set; }        
+        public string Provider { get; set; }
+
+        public virtual int GetSideHashCode()
+        {
+            string s = this.Location.ToString() + this.Side;
+            if(this.Angle.HasValue)
+                s += this.Angle.ToString();
+            return s.GetHashCode();
+        }
     }
 }
