@@ -110,10 +110,10 @@ namespace OutOfHome.Imports
                     if(board is IHaveSupplierContent b)
                         b.Price = new Models.Boards.SupplierInfo.PriceInfo { Value = cell.GetValue<int>(), IsConstant = true };
                     break;
-                case BoardProperty.Color:
-                    if(board is IColored c)
-                        c.Color = cell.GetBackgroundColor();
-                    break;
+                //case BoardProperty.Color:
+                //    if(board is IColored c)
+                //        c.Color = cell.GetBackgroundColor();
+                    //break;
             }
         }
         private static string GetBoardPropertyName(BoardProperty property) => property switch 

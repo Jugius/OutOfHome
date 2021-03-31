@@ -1,5 +1,6 @@
 ﻿using OfficeOpenXml;
 using OfficeOpenXml.Table;
+using OutOfHome.Exports.Excel.DocumentModel.Fields;
 using OutOfHome.Exports.Excel.DocumentModels;
 using OutOfHome.Exports.Excel.Extentions;
 using System;
@@ -29,8 +30,8 @@ namespace OutOfHome.Exports.Excel.Exporters
                 worksheet.View.ShowGridLines = false;
 
                 int row = 2;
-                var columns = schema.TableColumns.Cast<PoiExcelField>().ToList();
-                Dictionary<PoiExcelField, int> dic = GetColumnsDictionary(columns);
+                var columns = schema.TableColumns.ToList();
+                Dictionary<IExcelField, int> dic = columns.GetColumnsIndexesDictionary();
                 foreach(var poi in pois)
                 {
                     foreach(var column in columns)
@@ -41,7 +42,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                             string link = column.GetPropertyValueFrom(poi)?.ToString();
 
                             if(!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri uri))
-                                cell.WriteHyperlink(column.Name, uri.ToString());
+                                cell.WriteHyperlink(column.ColumnHeader, uri.ToString());
                         }
                         else
                         {
@@ -53,7 +54,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                     }
                     row++;
                 }
-                worksheet.InsertTable(row - 2, dic, schema);
+                worksheet.InsertTable(row - 2, dic, schema, new List<Models.DateTimePeriod>(0));
 
                 try
                 {
@@ -65,37 +66,6 @@ namespace OutOfHome.Exports.Excel.Exporters
                     throw new Exception("Ошибка сохранения файла: " + fileInfo.FilePath, ex);
                 }
             }
-        }
-        private static void InsertTable(this ExcelWorksheet worksheet, int rowsNumber, Dictionary<PoiExcelField, int> dic, SheetSchema schema)
-        {
-            foreach(var pair in dic)
-            {
-                worksheet.Cells[1, pair.Value].Value = pair.Key.Name;
-                var col = worksheet.Column(pair.Value);
-                col.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
-                col.Width = pair.Key.ColumnWidth;
-                if(pair.Key.NumberFormat != null)
-                    col.Style.Numberformat.Format = pair.Key.NumberFormat;
-            }
-            ExcelRange rg = worksheet.Cells[1, 1, rowsNumber + 1, dic.Count];
-            rg.FormatRange(schema.FontColor, schema.Font);
-            rg.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-            const string tableName = "Pois";
-
-            ExcelTable tab = worksheet.Tables.Add(rg, tableName);
-            tab.TableStyle = TableStyles.Light9;
-            rg.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-
-        }
-        private static Dictionary<PoiExcelField, int> GetColumnsDictionary(List<PoiExcelField> tableColumns)
-        {
-            Dictionary<PoiExcelField, int> dic = new Dictionary<PoiExcelField, int>(tableColumns.Count);
-            int column = 0;
-            foreach(var c in tableColumns)
-            {
-                dic.Add(c, ++column);
-            }
-            return dic;
         }
         private static void FormatRange(this ExcelRange range, System.Drawing.Color foreColor, System.Drawing.Font font)
         {

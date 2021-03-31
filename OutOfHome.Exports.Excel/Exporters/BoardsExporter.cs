@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OutOfHome.Exports.Excel.DocumentModel.Fields;
 
 namespace OutOfHome.Exports.Excel.Exporters
 {
@@ -26,15 +27,15 @@ namespace OutOfHome.Exports.Excel.Exporters
             {
                 int _itemsTotal = boards.Count;
                 BoardSheetSchema schema = fileInfo.SheetSchema as BoardSheetSchema;
-                List<BoardExcelField> schemaTableColumns = schema.TableColumns.Cast<BoardExcelField>().ToList();
-                Dictionary<BoardExcelField, int> dic = GetColumnsDictionary(schemaTableColumns);
+                var schemaTableColumns = schema.TableColumns.ToList();
+                Dictionary<IExcelField, int> columnsIndexesDic = schema.TableColumns.GetColumnsIndexesDictionary();
 
                 int _itemsDone = 0, _prevProgress = 0;
 
                 bool needDrawOccupation = schema.DrawOccupation && boards.Any(a => a.Occupation != null);
                 List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
 
-                bool needDrawPrice = schemaTableColumns.Any(a => a.Kind == BoardProperty.Price) && boards.Any(a => a.Price != null);
+                //bool needDrawPrice = schemaTableColumns.Any(a => a is BoardExcelField b && b.Kind == BoardProperty.Price) && boards.Any(a => a.Price != null);
                 DateTimePeriod pricePeriod = new DateTimePeriod { Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1), End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(2).AddSeconds(-1) };
 
 
@@ -52,19 +53,20 @@ namespace OutOfHome.Exports.Excel.Exporters
                     {
                         foreach(var column in schemaTableColumns) 
                         {
-                            var cell = worksheet.Cells[row, dic[column]];
+                            var cell = worksheet.Cells[row, columnsIndexesDic[column]];
                             if(column.IsHyperlink) {
                                 string link = column.GetPropertyValueFrom(board)?.ToString();
 
                                 if(!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri uri))
-                                    cell.WriteHyperlink(column.Name, Uri.EscapeUriString(uri.ToString()), false, true, linksAsFormula);
+                                    cell.WriteHyperlink(column.ColumnHeader, Uri.EscapeUriString(uri.ToString()), false, true, linksAsFormula);
                             }
-                            else if(column.Kind == BoardProperty.Color)
+                            else if(column is ColorExcelField)
                             {
                                 cell.SetBackgroundColor(board.Color);
                             }
-                            else {
-                                cell.Value = column.GetPropertyValueFrom(board, pricePeriod);
+                            else if(column is BoardExcelField b) 
+                            { 
+                                cell.Value = b.GetPropertyValueFrom(board, pricePeriod);
                             }
                         }
 
@@ -109,7 +111,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                         }
                     }
 
-                    worksheet.InsertTable(_itemsTotal, dic, schema, drawingPeriods);
+                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods);
                     try 
                     {
                         if(progress != null)
@@ -125,14 +127,16 @@ namespace OutOfHome.Exports.Excel.Exporters
             }, cancellationToken);
             return task;        
         }
+        
+
         public static Task Export(List<Board> boards, ExcelFileInfo fileInfo, IProgress<DataProgress> progress, CancellationToken cancellationToken = default)
         {
             var task = Task.Run(() =>
             {
                 int _itemsTotal = boards.Count;
                 BoardSheetSchema schema = fileInfo.SheetSchema as BoardSheetSchema;
-                List<BoardExcelField> schemaTableColumns = schema.TableColumns.Cast<BoardExcelField>().ToList();
-                Dictionary<BoardExcelField, int> dic = GetColumnsDictionary(schemaTableColumns);
+                var schemaTableColumns = schema.TableColumns.ToList();
+                Dictionary<IExcelField, int> columnsIndexesDic = schema.TableColumns.GetColumnsIndexesDictionary();
 
                 int _itemsDone = 0, _prevProgress = 0;
 
@@ -153,17 +157,17 @@ namespace OutOfHome.Exports.Excel.Exporters
                     {
                         foreach (var column in schemaTableColumns)
                         {
-                            var cell = worksheet.Cells[row, dic[column]];
+                            var cell = worksheet.Cells[row, columnsIndexesDic[column]];
                             if (column.IsHyperlink)
                             {
                                 string link = column.GetPropertyValueFrom(board)?.ToString();
 
                                 if(!string.IsNullOrEmpty(link) && Uri.TryCreate(link, UriKind.Absolute, out Uri uri))
-                                    cell.WriteHyperlink(column.Name, Uri.EscapeUriString(uri.ToString()), false, true, linksAsFormula);
+                                    cell.WriteHyperlink(column.ColumnHeader, Uri.EscapeUriString(uri.ToString()), false, true, linksAsFormula);
                             }
-                            else
+                            else if(column is BoardExcelField b)
                             {
-                                cell.Value = column.GetPropertyValueFrom(board, pricePeriod);
+                                cell.Value = b.GetPropertyValueFrom(board, pricePeriod);
                             }
                         }
 
@@ -207,7 +211,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                             }
                         }
                     }
-                    worksheet.InsertTable(_itemsTotal, dic, schema, drawingPeriods);
+                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods);
                     try
                     {
                         if (progress != null)
@@ -223,16 +227,7 @@ namespace OutOfHome.Exports.Excel.Exporters
             }, cancellationToken);
             return task;
         }
-        private static Dictionary<BoardExcelField, int> GetColumnsDictionary(List<BoardExcelField> tableColumns)
-        {
-            Dictionary<BoardExcelField, int> dic = new Dictionary<BoardExcelField, int>(tableColumns.Count);
-            int column = 0;
-            foreach(var c in tableColumns)
-            {
-                dic.Add(c, ++column);
-            }
-            return dic;
-        }
+        
         public class DataProgress
         {
             public int Progress { get; }

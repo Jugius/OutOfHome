@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OutOfHome.Exports.Excel.DocumentModel.Fields;
+using System.Collections.Generic;
 
 namespace OutOfHome.Exports.Excel.DocumentModels
 {

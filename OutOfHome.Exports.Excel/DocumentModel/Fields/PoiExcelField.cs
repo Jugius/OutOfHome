@@ -1,7 +1,7 @@
 ﻿using OutOfHome.Models.Pois;
 using System.Collections.Generic;
 
-namespace OutOfHome.Exports.Excel.DocumentModels
+namespace OutOfHome.Exports.Excel.DocumentModel.Fields
 {
     public sealed class PoiExcelField : PoiPropertyGetter, IExcelField
     {
@@ -16,6 +16,18 @@ namespace OutOfHome.Exports.Excel.DocumentModels
         }
         private int _columnWidth = 0;
         public bool IsHyperlink { get; set; }
+        public string ColumnHeader
+        {
+            get => _columnHeader ?? DefaultNames[this.Kind];
+            set => _columnHeader = string.IsNullOrEmpty(value) ? null : value;
+        }
+        private string _columnHeader;
+        public string NumberFormat => this.Kind switch
+        {
+            PoiProperty.Latitude => "0.00000###",
+            PoiProperty.Longitude => "0.00000###",
+            _ => null,
+        };
         public PoiExcelField(PoiProperty kind) : base(kind)
         {
             this.IsHyperlink = PropertiesContainsHyperlinks.Contains(kind);
@@ -73,5 +85,28 @@ namespace OutOfHome.Exports.Excel.DocumentModels
                 default: return 8;
             }            
         }
+        private static readonly Dictionary<PoiProperty, string> DefaultNames = new Dictionary<PoiProperty, string>()
+        {
+            { PoiProperty.Provider, "Provider" },
+            //{ PoiProperty.ProviderPlaceId, "Provider ID" },
+            
+            { PoiProperty.OriginalAddress, "Оригинальный запрос" },
+            { PoiProperty.Description, "Описание" },
+
+            { PoiProperty.Country, "Страна" },
+            { PoiProperty.Region, "Область" },
+            { PoiProperty.City, "Город" },
+            { PoiProperty.District, "Район" },
+            { PoiProperty.Street, "Улица" },
+            { PoiProperty.StreetNumber, "Дом" },
+            //{ PoiProperty.Zip, "Индекс" },
+            { PoiProperty.FormattedAddress, "Адрес Poi" },
+
+            { PoiProperty.Location, "Location" },
+            { PoiProperty.Latitude, "Lat" },
+            { PoiProperty.Longitude, "Lon" },
+
+            { PoiProperty.URL_Map, "Карта" }
+        };
     }
 }

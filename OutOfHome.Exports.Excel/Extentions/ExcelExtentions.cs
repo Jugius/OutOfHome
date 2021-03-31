@@ -1,6 +1,7 @@
 ﻿using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
+using OutOfHome.Exports.Excel.DocumentModel.Fields;
 using OutOfHome.Exports.Excel.DocumentModels;
 using OutOfHome.Models;
 using OutOfHome.Models.Boards;
@@ -13,20 +14,20 @@ namespace OutOfHome.Exports.Excel.Extentions
 {
     internal static class ExcelExtentions
     {
-        internal static int InsertTable(this ExcelWorksheet worksheet, int rowsNumber, Dictionary<BoardExcelField, int> dic, SheetSchema schema, List<DateTimePeriod> drawingPeriods)
+        internal static int InsertTable(this ExcelWorksheet worksheet, int rowsNumber, Dictionary<IExcelField, int> columnsIndexesDic, SheetSchema schema, List<DateTimePeriod> drawingPeriods)
         {
             const int headerRow = 1;
 
-            foreach(var pair in dic)
+            foreach(var pair in columnsIndexesDic)
             {
-                worksheet.Cells[headerRow, pair.Value].Value = pair.Key.Name;
+                worksheet.Cells[headerRow, pair.Value].Value = pair.Key.ColumnHeader;
                 var col = worksheet.Column(pair.Value);
                 col.Style.HorizontalAlignment = pair.Key.GetDefaultAlign();
                 col.Width = pair.Key.ColumnWidth;
                 if (pair.Key.NumberFormat != null)
                     col.Style.Numberformat.Format = pair.Key.NumberFormat;
             }
-            int column = dic.Count;
+            int column = columnsIndexesDic.Count;
 
             if(drawingPeriods.Count > 0)
             {
@@ -93,6 +94,14 @@ namespace OutOfHome.Exports.Excel.Extentions
                 _ => ExcelHorizontalAlignment.Left,
             };
         }
+        public static ExcelHorizontalAlignment GetDefaultAlign(this IExcelField field)
+        {
+            return field switch
+            {
+                BoardPropertyGetter b => b.GetDefaultAlign(),
+                _ => ExcelHorizontalAlignment.Left,
+            };
+        }
         private static readonly Dictionary<int, string> Months = new Dictionary<int, string>
         {
             { 1, "янв" },
@@ -117,6 +126,15 @@ namespace OutOfHome.Exports.Excel.Extentions
             { OccupationKind.Unavailable, Color.FromArgb(242, 242, 242) }
         };
         internal static Color GetCellColor(this OccupationKind kind) => OccupationColors.TryGetValue(kind, out Color color) ? color : Color.Transparent;
-        
+        internal static Dictionary<IExcelField, int> GetColumnsIndexesDictionary(this IEnumerable<IExcelField> tableColumns)
+        {
+            Dictionary<IExcelField, int> dic = new Dictionary<IExcelField, int>();
+            int column = 0;
+            foreach(var c in tableColumns)
+            {
+                dic.Add(c, ++column);
+            }
+            return dic;
+        }
     }
 }
