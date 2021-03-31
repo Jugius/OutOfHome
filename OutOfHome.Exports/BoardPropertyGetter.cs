@@ -2,57 +2,21 @@
 using OutOfHome.Models.Boards;
 using OutOfHome.Models.Views;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace OutOfHome.Exports
 {
-    public class BoardPropertyGetter : PropertyGetter
+    public class BoardPropertyGetter : PropertyGetter<Board>
     {
         private const string GoogleMapLink = @"https://www.google.com/maps/place/";
         private const string GoogleStreetsViewLink = @"https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=";
-
-        private static readonly Regex AspectRegex = new Regex(Regex.Escape("{") + "([^{}]*)" + Regex.Escape("}"));
-        private static readonly HashSet<BoardProperty> PropertiesWithHyperlinks = new HashSet<BoardProperty>
-        {
-            BoardProperty.URL_DoorsMap, BoardProperty.URL_DoorsPhoto, BoardProperty.URL_GoogleMapPoint, BoardProperty.URL_Map, BoardProperty.URL_Photo, BoardProperty.URL_StreetsView
-        };
         public BoardProperty Kind { get; set; }
-        public string Name
+        public BoardPropertyGetter(BoardProperty kind)
         {
-            set { _name = string.IsNullOrEmpty(value) ? null : value; }
-            get
-            {
-                if (string.IsNullOrEmpty(_name))
-                {
-                    if (this.Kind == BoardProperty.Custom)
-                        return this.AspectName;
-                    else
-                        return DefaultNames[this.Kind];
-                }
-                return _name;
-            }
-        }
-        private string _name;
-        public string AspectName { get; set; }
-        public virtual string NumberFormat => this.Kind switch
-        {
-            BoardProperty.Price => "### ### ##0",
-            BoardProperty.DoorsId => "########0",
-            BoardProperty.OTS => "##0",
-            BoardProperty.GRP => "##0.00",
-            _ => null,
-        };
-        public bool IsHyperlink { get; set; } = false;
-        public BoardPropertyGetter(BoardProperty kind) 
-        { 
             this.Kind = kind;
-            this.IsHyperlink = PropertiesWithHyperlinks.Contains(kind);
-        }        
-
+        }
         public BoardPropertyGetter() { }
-        public object GetPropertyValueFrom(Board board) => this.Kind switch
+        public override object GetPropertyValueFrom(Board board) => this.Kind switch
         {
             BoardProperty.ProviderID => board.ProviderID,
             BoardProperty.Provider => board.Provider,
@@ -72,15 +36,15 @@ namespace OutOfHome.Exports
             BoardProperty.URL_StreetsView => new Uri(GoogleStreetsViewLink + board.Location?.ToString()),
             BoardProperty.Light => board.Lighting ? "+" : "-",
 
-            BoardProperty.DoorsId => board.DoorsInfo?.DoorsID,
-            BoardProperty.OTS => board.DoorsInfo?.OTS,
-            BoardProperty.GRP => board.DoorsInfo?.GRP,
+            BoardProperty.DoorsId => NullableOrNull(board.DoorsInfo?.DoorsID),
+            BoardProperty.OTS => NullableOrNull(board.DoorsInfo?.OTS),
+            BoardProperty.GRP => NullableOrNull(board.DoorsInfo?.GRP),
             BoardProperty.Location => board.Location?.ToString(),
             BoardProperty.Street => board.Address.Street,
             BoardProperty.StreetNumber => board.Address.StreetNumber,
             BoardProperty.AddressDescription => board.Address.Description,
-            BoardProperty.Custom => GetPropertyAspectValueFrom(board),
-            BoardProperty.Color => (board as IColored)?.Color,
+            //BoardProperty.Custom => GetCustomPropertyValueFrom(board),
+            //BoardProperty.Color => (board as IColored)?.Color,
 
             BoardProperty.OccSource => (board as IHaveSupplierContent)?.Occupation?.OriginOccupationString,
 
@@ -88,8 +52,13 @@ namespace OutOfHome.Exports
         };
         public override object GetPropertyValueFrom(object source)
         {
-            if(source == null) throw new ArgumentNullException();
-            return GetPropertyValueFrom(source as Board);
+            if(source == null) throw new ArgumentNullException(nameof(source));
+            return source switch
+            {
+                BaseBoardModelView b => GetPropertyValueFrom(b),
+                Board b => GetPropertyValueFrom(b),
+                _ => throw new Exception($"Неизвестный тип {source.GetType()}")
+            };
         }
         public object GetPropertyValueFrom(BaseBoardModelView board) => this.Kind switch
         {
@@ -125,9 +94,8 @@ namespace OutOfHome.Exports
             BoardProperty.Location => GetFormattedLocation(board),
             
             BoardProperty.OccSource => throw new NotImplementedException(),
-            BoardProperty.Custom => GetPropertyAspectValueFrom(board),
-
-            BoardProperty.Color => (board as IColored)?.Color,
+            //BoardProperty.Custom => GetCustomPropertyValueFrom(board),
+            //BoardProperty.Color => (board as IColored)?.Color,
 
             _ => throw new Exception($"There is no implemented getter in GetPropertyValueFrom for FieldKind {this.Kind}"),
         };
@@ -136,52 +104,7 @@ namespace OutOfHome.Exports
         public object GetPropertyValueFrom(Board board, DateTimePeriod period) =>
             this.Kind == BoardProperty.Price ? (board as IHaveSupplierContent)?.Price?.GetValue(period) : GetPropertyValueFrom(board);
         private static string GetFormattedLocation(BaseBoardModelView board) => string.Format(CultureInfo.InvariantCulture, "{0:0.00000000},{1:0.00000000}", board.Latitude, board.Longitude);
-        
-        private static object NullableOrNull(int? val) => val.HasValue ? val.Value as object : null;
-        private static object NullableOrNull(double? val) => val.HasValue ? val.Value as object : null;              
-        protected virtual string GetPropertyAspectValueFrom(object item)
-        {
-            MatchCollection maches = AspectRegex.Matches(this.AspectName);
-            string aspect = this.AspectName;
-            foreach (Match m in maches)
-            {
-                var result = item.GetPropertyValueByName(m.Groups[1].Value);
-                if (result == null) return aspect;
-                aspect = aspect.Replace(m.Value, result.ToString());
-            }
-            return aspect;
-        }
-        static readonly Dictionary<BoardProperty, string> DefaultNames = new Dictionary<BoardProperty, string>()
-        {
-            { BoardProperty.ProviderID, "ID" },
-            { BoardProperty.Provider, "источник" },
-            { BoardProperty.Supplier, "оператор" },
-            { BoardProperty.SupplierCode, "код оператора" },
-            { BoardProperty.Region, "область" },
-            { BoardProperty.City, "город" },
-            { BoardProperty.Address, "адрес" },
-            { BoardProperty.Kind, "тип" },
-            { BoardProperty.Side, "сторона" },
-            { BoardProperty.Size, "размер" },
-            { BoardProperty.Light, "свет" },
-            { BoardProperty.Price, "прайс" },
-            { BoardProperty.URL_Map, "схема" },
-            { BoardProperty.URL_Photo, "фото" },
-            { BoardProperty.URL_DoorsPhoto, "фото Doors"},
-            { BoardProperty.URL_DoorsMap, "схема Doors" },
-            { BoardProperty.URL_GoogleMapPoint, "карта" },
-            { BoardProperty.URL_StreetsView, "панорама"},
-            { BoardProperty.DoorsId, "DoorsID" },
-            { BoardProperty.OTS, "OTS" },
-            { BoardProperty.GRP, "GRP" },
-            { BoardProperty.Location, "коорд" },
-            { BoardProperty.OccSource, "занятость ориг. стр." },
-            { BoardProperty.Street, "улица" },
-            { BoardProperty.StreetNumber, "дом" },
-            { BoardProperty.AddressDescription, "описание"},
-            
-            { BoardProperty.Custom, "Custom" },
-            { BoardProperty.Color, "цвет" }
-        };
+        private static int? NullableOrNull(int? val) => val.HasValue && val.Value != 0 ? val.Value : null;
+        private static double? NullableOrNull(double? val) => val.HasValue && val.Value != 0 ? val.Value : null;
     }
 }

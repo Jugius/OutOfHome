@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OutOfHome.Models.Views
+namespace OutOfHome.Exports
 {
-    public interface IBinded
+    public interface ICustomPropertyGetter : IPropertyGetter
     {
-        Pois.Poi Poi { get; set; }
+        string CustomProperty { get; set; }
     }
 }

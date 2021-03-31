@@ -18,7 +18,7 @@
 
         //Additional
         public string Description { get; set; }
-        public string SourceQueryStrign { get; set; }
+        public string SourceQueryString { get; set; }
         public BasePoiModelView() { }
         public BasePoiModelView(Pois.Poi poi)
         {
@@ -51,7 +51,7 @@
             this.StreetNumber = view.StreetNumber;
 
             this.Description = view.Description;
-            this.SourceQueryStrign = view.SourceQueryStrign;
+            this.SourceQueryString = view.SourceQueryString;
         }
     }
 
