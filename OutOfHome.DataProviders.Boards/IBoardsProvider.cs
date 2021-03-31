@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace OutOfHome.Models.Boards.Providers
+namespace OutOfHome.DataProviders.Boards
 {
     public interface IBoardsProvider<TBoardsContainer> where TBoardsContainer : IBoardsContainer
     {

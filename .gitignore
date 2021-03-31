@@ -3,6 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# MSTest tests Projects
+*[Tt]ests/
+
+# Grids & Doors Projects
+*OutOfHome.DataProviders.Boards.Doors/
+*OutOfHome.DataProviders.Boards.Grids/
+
 # User-specific files
 *.rsuser
 *.suo
@@ -39,8 +46,7 @@ Generated\ Files/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
-# MSTest tests Projects
-*[Tt]ests/
+
 
 # NUNIT
 *.VisualState.xml

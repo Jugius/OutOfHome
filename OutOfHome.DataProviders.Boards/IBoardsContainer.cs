@@ -1,7 +1,8 @@
-﻿using System;
+﻿using OutOfHome.Models.Boards;
+using System;
 using System.Collections.Generic;
 
-namespace OutOfHome.Models.Boards.Providers
+namespace OutOfHome.DataProviders.Boards
 {
     public interface IBoardsContainer
     {

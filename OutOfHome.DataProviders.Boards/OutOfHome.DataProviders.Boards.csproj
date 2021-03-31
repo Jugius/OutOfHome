@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GoogleApi" Version="3.10.7" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\OutOfHome.Models\OutOfHome.Models.csproj" />
   </ItemGroup>
 
