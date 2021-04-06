@@ -12,6 +12,7 @@ namespace OutOfHome.Exports.Excel.Exporters
 {
     public static class PoisExporter
     {
+        private const string TableName = "Pois";
         static PoisExporter()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -54,7 +55,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                     }
                     row++;
                 }
-                worksheet.InsertTable(row - 2, dic, schema, new List<Models.DateTimePeriod>(0));
+                worksheet.InsertTable(row - 2, dic, schema, new List<Models.DateTimePeriod>(0), TableName);
 
                 try
                 {

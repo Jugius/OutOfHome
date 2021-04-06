@@ -15,6 +15,7 @@ namespace OutOfHome.Exports.Excel.Exporters
 {
     public static class BoardsExporter
     {
+        private const string TableName = "Grid";
         static BoardsExporter()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -33,7 +34,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                 int _itemsDone = 0, _prevProgress = 0;
 
                 bool needDrawOccupation = schema.DrawOccupation && boards.Any(a => a.Occupation != null);
-                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
+                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.SplitPeriodIntoMonthParts(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
 
                 //bool needDrawPrice = schemaTableColumns.Any(a => a is BoardExcelField b && b.Kind == BoardProperty.Price) && boards.Any(a => a.Price != null);
                 DateTimePeriod pricePeriod = new DateTimePeriod { Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1), End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(2).AddSeconds(-1) };
@@ -111,7 +112,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                         }
                     }
 
-                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods);
+                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods, TableName);
                     try 
                     {
                         if(progress != null)
@@ -141,7 +142,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                 int _itemsDone = 0, _prevProgress = 0;
 
                 bool needDrawOccupation = schema.DrawOccupation && boards.Any(a => (a is IHaveSupplierContent));
-                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
+                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.SplitPeriodIntoMonthParts(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
 
                 using (ExcelPackage package = new ExcelPackage())
                 {
@@ -211,7 +212,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                             }
                         }
                     }
-                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods);
+                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods, TableName);
                     try
                     {
                         if (progress != null)

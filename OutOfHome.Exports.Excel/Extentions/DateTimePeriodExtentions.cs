@@ -6,7 +6,7 @@ namespace OutOfHome.Exports.Excel.Extentions
 {
     internal static class DateTimePeriodExtentions
     {
-        internal static List<DateTimePeriod> BuildMonthPeriods(this DateTimePeriod period)
+        internal static List<DateTimePeriod> SplitPeriodIntoMonthParts(this DateTimePeriod period)
         {
             if(period.Start.Month == period.End.Month && period.Start.Year == period.End.Year)
                 return new List<DateTimePeriod>(1) { period };
@@ -28,5 +28,27 @@ namespace OutOfHome.Exports.Excel.Extentions
 
             return periods;
         }
+        internal static List<DateTimePeriod> SplitPeriodIntoMonthPartsA(this DateTimePeriod period)
+        {
+            var Start = period.Start;
+            var End = period.End;
+            List<DateTimePeriod> list = new List<DateTimePeriod>();
+
+            var runningDate = Start;
+            while(runningDate < End)
+            {
+                var nextMonthSeed = runningDate.AddMonths(1);
+                var to = Min(new DateTime(nextMonthSeed.Year, nextMonthSeed.Month, 1), End);
+                list.Add(new DateTimePeriod(runningDate, to));
+                runningDate = to;
+            }
+            return list;
+        }
+        private static DateTime Min(DateTime date1, DateTime date2)
+        {
+            return (date1 < date2 ? date1 : date2);
+        }
+        
     }
 }
+

@@ -14,6 +14,7 @@ namespace OutOfHome.Exports.Excel.Exporters
 {
     public static class BindsExporter
     {
+        private const string TableName = "Binds";
         static BindsExporter()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -30,7 +31,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                 Dictionary<IExcelField, int> columnsIndexesDic = GetColumnsDictionary(schema.TableColumns);
 
                 bool needDrawOccupation = schema.DrawOccupation && boards.Any(a => a.Occupation != null);
-                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.BuildMonthPeriods(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
+                List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.SplitPeriodIntoMonthParts(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
 
                 bool needDrawPrice = schema.TableColumns.Any(a => a is BoardPropertyGetter g && g.Kind == BoardProperty.Price) && boards.Any(a => a.Price != null);
                 DateTimePeriod pricePeriod = new DateTimePeriod { Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1), End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(2).AddSeconds(-1) };
@@ -97,7 +98,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                         row++;
                     }
 
-                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods);
+                    worksheet.InsertTable(_itemsTotal, columnsIndexesDic, schema, drawingPeriods, TableName);
                     try
                     {
                         package.SaveAs(new System.IO.FileInfo(fileInfo.FilePath));
