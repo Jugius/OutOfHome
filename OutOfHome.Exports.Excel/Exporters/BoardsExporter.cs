@@ -37,7 +37,7 @@ namespace OutOfHome.Exports.Excel.Exporters
                 List<DateTimePeriod> drawingPeriods = needDrawOccupation ? Extentions.DateTimePeriodExtentions.SplitPeriodIntoMonthParts(schema.OccupationVisiblePeriod) : new List<DateTimePeriod>(0);
 
                 //bool needDrawPrice = schemaTableColumns.Any(a => a is BoardExcelField b && b.Kind == BoardProperty.Price) && boards.Any(a => a.Price != null);
-                DateTimePeriod pricePeriod = new DateTimePeriod { Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1), End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(2).AddSeconds(-1) };
+                DateTimePeriod pricePeriod = schema.PriceVisiblePeriod;
 
 
                 using(ExcelPackage package = new ExcelPackage())                 
@@ -152,7 +152,7 @@ namespace OutOfHome.Exports.Excel.Exporters
 
                     worksheet.View.ShowGridLines = false;
                     int row = 2;
-                    DateTimePeriod pricePeriod = new DateTimePeriod { Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1), End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(2).AddSeconds(-1) };
+                    DateTimePeriod pricePeriod = schema.PriceVisiblePeriod;
 
                     foreach (var board in boards)
                     {
